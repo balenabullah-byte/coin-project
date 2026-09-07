@@ -1,27 +1,37 @@
-import { defineStore } from 'pinia'
-import axios from 'axios'
+import { defineStore } from "pinia";
+import axios from "axios";
 
-export const useCoinsStore = defineStore('coins', {
+export const useCoinsStore = defineStore("coins", {
   state: () => ({
     coins: [],
-    searchQuery: ''
+    isLoading: false,
+    error: null,
+    searchQuery: "",
   }),
 
   actions: {
     async fetchCoins() {
-      const response = await axios.request({
-        method: 'GET',
-        url: 'https://api.coingecko.com/api/v3/coins/markets',
-        params: {
-          vs_currency: 'usd'
-        },
-        headers: {
-          'x-cg-demo-api-key': 'CG-a1cG8KvoxGKgoJvYXuWeNg9k'
-        }
-      })
+      if (this.isLoading) return;
 
-      console.log('Coins API response:', response.data)
-      this.coins = response.data
-    }
-  }
-})
+      this.isLoading = true;
+      this.error = null;
+
+      try {
+        const response = await axios.request({
+          method: "GET",
+          url: "https://api.coingecko.com/api/v3/coins/markets",
+          params: { vs_currency: "usd" },
+          headers: {
+            "x-cg-demo-api-key": import.meta.env.VITE_COINGECKO_API_KEY,
+          },
+        });
+        this.coins = response.data;
+      } catch (error) {
+        this.error = "Failed to load coins. Please try again.";
+        console.error("Error fetching coins:", error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+  },
+});

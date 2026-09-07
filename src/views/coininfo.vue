@@ -55,6 +55,7 @@ const route = useRoute()
 const coinsStore = useCoinsStore()
 const { coins, isLoading, error } = storeToRefs(coinsStore)
 
+const coin = computed(() => coins.value.find(item => item.id === route.params.id))
 const coinKeys = computed(() => coin.value
   ? Object.keys(coin.value).filter(key => {
       if (key === 'image' || key === 'name') return false

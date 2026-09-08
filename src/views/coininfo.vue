@@ -1,6 +1,9 @@
 <template>
   <main v-if="coin || isLoading || error"
     class="flex min-h-screen w-full flex-col items-center justify-center gap-8 p-4">
+    <div class="w-full max-w-7xl">
+      <RouterLink to="/" class="btn btn-ghost">Go Back</RouterLink>
+    </div>
     <section class="hero w-full bg-base-200">
       <div class="hero-content flex-col lg:flex-row">
         <img :src="coin.image" :alt="coin.name" class="w-full max-w-sm rounded-lg shadow-2xl" />
@@ -48,7 +51,7 @@
 <script setup>
 import { computed, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useRoute } from 'vue-router';
+import { RouterLink, useRoute } from 'vue-router';
 import { useCoinsStore } from '@/stores/coins';
 
 const route = useRoute()
@@ -63,7 +66,6 @@ const coinKeys = computed(() => coin.value
       return typeof value !== 'object' || value === null
     })
   : [])
-
 onMounted(() => {
   if (!coins.value.length) {
     coinsStore.fetchCoins().catch(error => console.error(error))

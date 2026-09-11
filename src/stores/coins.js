@@ -7,9 +7,23 @@ export const useCoinsStore = defineStore("coins", {
     isLoading: false,
     error: null,
     searchQuery: "",
+      favorites: JSON.parse(localStorage.getItem("favorites") || "[]"),
+
   }),
 
   actions: {
+    
+  toggleFavorite(coinId) {
+    const index = this.favorites.indexOf(coinId);
+    if (index === -1) {
+      this.favorites.push(coinId);
+    } else {
+      this.favorites.splice(index, 1);
+    }
+    localStorage.setItem("favorites", JSON.stringify(this.favorites));
+  },
+  // ...your existing fetchCoins stays as-is
+
     async fetchCoins() {
       if (this.isLoading) return;
 

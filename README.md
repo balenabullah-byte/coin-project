@@ -36,3 +36,10 @@ npm run dev
 ```sh
 npm run build
 ```
+## Environment setup
+
+This project needs a free CoinGecko API key.
+
+1. Get one at https://www.coingecko.com/en/api
+2. Copy `.env.example` to a new file named `.env`
+3. Paste your key into `.env`

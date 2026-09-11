@@ -1,46 +1,33 @@
 <template>
-  <main v-if="coin || isLoading || error"
-    class="flex min-h-screen w-full flex-col items-center justify-center gap-8 p-4">
+  <main class="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-8 p-4 sm:p-8">
     <div class="w-full max-w-7xl">
       <RouterLink to="/" class="btn btn-ghost">Go Back</RouterLink>
     </div>
-    <section class="hero w-full bg-base-200">
+    <section v-if="coin" class="hero w-full bg-base-200">
       <div class="hero-content flex-col lg:flex-row">
         <img :src="coin.image" :alt="coin.name" class="w-full max-w-sm rounded-lg shadow-2xl" />
         <h1 class="text-center text-3xl font-bold sm:text-5xl lg:text-left">{{ coin.name }}</h1>
       </div>
     </section>
-    <section class="flex w-full justify-center">
-      <div class="overflow-x-auto">
-        <table class="table">
+    <section class="w-full">
+      <div v-if="isLoading" class="flex justify-center py-16">
+        <span class="loading loading-dots loading-xl" aria-label="Loading coin details"></span>
+      </div>
+      <div v-else-if="error" role="alert" class="alert alert-error">
+        <span>{{ error }}</span>
+      </div>
+      <div v-else-if="coin" class="overflow-x-auto rounded-box bg-base-100 shadow-sm">
+        <table class="table table-zebra">
           <thead>
             <tr>
-              <th>Property</th>
+              <th>Metric</th>
               <th>Value</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-if="isLoading">
-              <th><span class="loading loading-dots loading-xl"></span>
-              </th>
-              <td><span class="loading loading-dots loading-xl"></span>
-              </td>
-            </tr>
-            <tr v-else-if="error">
-              <td colspan="2">
-                <div role="alert" class="alert alert-error">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                  </svg>
-                  <span>{{ error }}</span>
-                </div>
-              </td>
-            </tr>
-            <tr v-for="key in coinKeys" :key="key">
-              <th>{{ key }}</th>
-              <td class="break-all">{{ coin[key] }}</td>
+            <tr v-for="metric in metrics" :key="metric.label">
+              <th>{{ metric.label }}</th>
+              <td class="font-medium">{{ metric.format(coin[metric.key]) }}</td>
             </tr>
           </tbody>
         </table>
@@ -59,13 +46,30 @@ const coinsStore = useCoinsStore()
 const { coins, isLoading, error } = storeToRefs(coinsStore)
 
 const coin = computed(() => coins.value.find(item => item.id === route.params.id))
-const coinKeys = computed(() => coin.value
-  ? Object.keys(coin.value).filter(key => {
-      if (key === 'image' || key === 'name') return false
-      const value = coin.value[key]
-      return typeof value !== 'object' || value === null
-    })
-  : [])
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 2,
+})
+const integerFormatter = new Intl.NumberFormat('en-US')
+
+const metrics = [
+  { label: 'Price', key: 'current_price', format: formatCurrency },
+  { label: 'Market cap', key: 'market_cap', format: formatCurrency },
+  { label: '24h high', key: 'high_24h', format: formatCurrency },
+  { label: '24h low', key: 'low_24h', format: formatCurrency },
+  { label: 'All-time high', key: 'ath', format: formatCurrency },
+  { label: 'Market cap rank', key: 'market_cap_rank', format: formatRank },
+]
+
+function formatCurrency(value) {
+  return value == null ? 'N/A' : currencyFormatter.format(value)
+}
+
+function formatRank(value) {
+  return value == null ? 'N/A' : `#${integerFormatter.format(value)}`
+}
+
 onMounted(() => {
   if (!coins.value.length) {
     coinsStore.fetchCoins().catch(error => console.error(error))

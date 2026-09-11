@@ -25,7 +25,18 @@ export const useCoinsStore = defineStore("coins", {
             "x-cg-demo-api-key": import.meta.env.VITE_COINGECKO_API_KEY,
           },
         });
-        this.coins = response.data;
+        this.coins = response.data.map((coin) => ({
+          id: coin.id,
+          name: coin.name,
+          image: coin.image,
+          price_change_percentage_24h: coin.price_change_percentage_24h,
+          current_price: coin.current_price,
+          market_cap: coin.market_cap,
+          high_24h: coin.high_24h,
+          low_24h: coin.low_24h,
+          ath: coin.ath,
+          market_cap_rank: coin.market_cap_rank,
+        }));
       } catch (error) {
         this.error = "Failed to load coins. Please try again.";
         console.error("Error fetching coins:", error);

@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import mianpage from '@/views/mianpage.vue'
-import coininfo from '@/views/coininfo.vue'
+import mianpage from '@/views/MianPage.vue'
+import coininfo from '@/views/CoinInfo.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [

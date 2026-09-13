@@ -1,7 +1,7 @@
 <script setup>
 import { RouterView } from 'vue-router';
 import { useRoute } from 'vue-router';
-import Navbar from '@/Components/navbar.vue'
+import Navbar from '@/components/navbar.vue'
 import { storeToRefs } from 'pinia';
 import { useCoinsStore } from '@/stores/coins';
 

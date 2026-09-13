@@ -5,17 +5,17 @@
             <h1 class="mt-2 text-3xl font-bold sm:text-4xl">Explore cryptocurrencies</h1>
             <p class="mt-2 text-base-content/70">Track prices and daily movement across the market.</p>
         </header>
-        <div class="flex flex-row gap-10">
+        <div class="flex flex-wrap items-center gap-3 sm:gap-5">
             <button class="btn btn-sm" :class="showOnlyFavorites ? 'btn-primary' : 'btn-ghost'"
                 @click="showOnlyFavorites = !showOnlyFavorites">
                 ★ My watchlist
             </button>
-<select class="select" v-model="selectedFilter">
-  <option value="all">Filter</option>
-  <option value="all">All</option>
-  <option value="price_up">Price up</option>
-  <option value="price_down">Price down</option>
-</select>
+            <select class="select select-sm w-full max-w-xs" v-model="selectedFilter">
+                <option value="all">Filter</option>
+                <option value="all">All</option>
+                <option value="price_up">Price up</option>
+                <option value="price_down">Price down</option>
+            </select>
         </div>
 
         <section v-if="isLoading" class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"

@@ -52,7 +52,8 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 2,
 })
 const integerFormatter = new Intl.NumberFormat('en-US')
-
+// key:label 
+//key:for coin obj
 const metrics = [
   { label: 'Price', key: 'current_price', format: formatCurrency },
   { label: 'Market cap', key: 'market_cap', format: formatCurrency },

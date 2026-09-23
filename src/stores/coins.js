@@ -7,20 +7,31 @@ export const useCoinsStore = defineStore("coins", {
     isLoading: false,
     error: null,
     searchQuery: "",
+    selectedIds: [],
       favorites: JSON.parse(localStorage.getItem("favorites") || "[]"),
 
   }),
-
+getters: {
+  compareCoins(state) {
+    return state.coins.filter((coin) => state.selectedIds.includes(coin.id));
+  },
+  canCompare(state) {
+    return state.selectedIds.length >= 2;
+  },
+},
   actions: {
-    
-  toggleFavorite(coinId) {
-    const index = this.favorites.indexOf(coinId);
+   
+ toggleCompare(coinId) {
+    const index = this.selectedIds.indexOf(coinId);
     if (index === -1) {
-      this.favorites.push(coinId);
+      if (this.selectedIds.length < this.coins.length) this.selectedIds.push(coinId);
     } else {
-      this.favorites.splice(index, 1);
+      this.selectedIds.splice(index, 1);
     }
-    localStorage.setItem("favorites", JSON.stringify(this.favorites));
+  },
+
+  clearCompare() {
+    this.selectedIds = [];
   },
   // ...your existing fetchCoins stays as-is
 
@@ -58,5 +69,6 @@ export const useCoinsStore = defineStore("coins", {
         this.isLoading = false;
       }
     },
+
   },
 });

@@ -5,17 +5,17 @@
             <h1 class="mt-2 text-3xl font-bold sm:text-4xl">Explore cryptocurrencies</h1>
             <p class="mt-2 text-base-content/70">Track prices and daily movement across the market.</p>
         </header>
-        <div class="flex flex-wrap items-center gap-3 sm:gap-5">
+        <div class="flex flex-wrap items-center gap-3 sm:gap-5 justify-end pb-8">
             <button class="btn btn-sm" :class="showOnlyFavorites ? 'btn-primary' : 'btn-ghost'"
                 @click="showOnlyFavorites = !showOnlyFavorites">
                 ★ My watchlist
             </button>
             <select class="select select-sm w-full max-w-xs" v-model="selectedFilter">
                 <option value="all">Filter</option>
-                <option value="all">All</option>
                 <option value="price_up">Price up</option>
                 <option value="price_down">Price down</option>
             </select>
+            
         </div>
 
         <section v-if="isLoading" class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
@@ -60,10 +60,13 @@
                         <div class="card-actions mt-2 justify-end">
                             <router-link :to="`/coin/${coin.id}`" class="btn btn-primary">View details</router-link>
                         </div>
-                        <button class="btn btn-ghost btn-circle" @click="coinsStore.toggleFavorite(coin.id)" aria-label="Toggle favorite">
+                        <button class="btn btn-ghost btn-circle" @click="coinsStore.toggleFavorite(coin.id)"
+                            aria-label="Toggle favorite">
                             <svg viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5"
-                                :class="favorites.includes(coin.id) ? 'text-warning' : 'text-base-content/30'" aria-hidden="true">
-                                <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                                :class="favorites.includes(coin.id) ? 'text-warning' : 'text-base-content/30'"
+                                aria-hidden="true">
+                                <path
+                                    d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                             </svg>
                         </button>
                     </div>
@@ -84,6 +87,7 @@ const { coins, searchQuery, isLoading, error, favorites } = storeToRefs(coinsSto
 const skeletonCards = Array.from({ length: 8 }, (_, index) => index)
 const showOnlyFavorites = ref(false)
 const selectedFilter = ref('all')
+const isDarkMode = ref(false)
 const filteredCoins = computed(() => {
     const query = searchQuery.value.trim().toLowerCase()
     let result = coins.value
@@ -106,15 +110,23 @@ const filteredCoins = computed(() => {
 })
 
 function formatPercentage(value) {
-    return Number(value ?? 0).toFixed(2)
+    return Math.abs(Number(value ?? 0)).toFixed(2)
 }
 
 function loadCoins() {
     return coinsStore.fetchCoins()
 }
 
+function applyTheme() {
+    const theme = isDarkMode.value ? 'dark' : 'light'
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
+}
+
 onMounted(() => {
     if (!coins.value.length) loadCoins()
+    isDarkMode.value = localStorage.getItem('theme') === 'dark'
+    applyTheme()
 })
 
 </script>

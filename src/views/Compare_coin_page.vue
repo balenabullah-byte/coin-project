@@ -1,9 +1,9 @@
 <template>
-    <main class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.6fr)] items-start pb-6">
-        <div class="lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-2">
-            <div class="sticky top-0 z-10 bg-base-100 border-b pb-4 mb-4 flex flex-wrap items-center gap-3">
+    <main class="mx-auto grid w-full max-w-7xl grid-cols-1 items-start gap-6 px-4 py-6 sm:px-6 lg:px-8 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.6fr)]">
+        <div class="min-w-0 xl:max-h-[calc(100vh-2rem)] xl:overflow-y-auto xl:pr-2">
+            <div class="sticky top-0 z-10 mb-4 flex flex-wrap items-center gap-3 border-b bg-base-100 pb-4">
                 <div class="flex gap-2 w-full overflow-x-auto min-w-0 sm:flex-1 sm:w-auto">
-                    <span v-for="coin in compareCoins" :key="coin.id" class="badge badge-lg gap-2 shrink-0">
+                    <span v-for="coin in compareCoins" :key="coin.id" class="badge badge-lg shrink-0 gap-2">
                         <img :src="coin.image" :alt="`${coin.name} logo`" class="w-4 h-4" /> {{ coin.name }}
                         <button class="btn btn-ghost btn-xs" @click="removeSelectedCoin(coin.id)">✕</button>
                     </span>
@@ -11,10 +11,9 @@
                 <span class="text-sm opacity-70 sm:whitespace-nowrap">{{ compareCoins.length }} / {{ filtered_compareCoins.length }}</span>
                 <button class="btn btn-primary w-full sm:w-auto" :disabled="!canCompare" @click="showComparisonTable">Compare</button>
             </div>
-
             <section class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <label v-for="coin in filtered_compareCoins" :key="coin.id"
-                    class="card bg-base-100 shadow-sm cursor-pointer border-2 border-transparent has-checked:border-primary">
+                    class="card min-w-0 cursor-pointer border-2 border-transparent bg-base-100 shadow-sm has-checked:border-primary">
                     <div class="card-body items-center p-4">
                         <input type="checkbox" class="checkbox checkbox-primary absolute top-3 right-3"
                             :checked="selectedIds.includes(coin.id)" @change="toggleCompare(coin.id)" />
@@ -31,8 +30,8 @@
 
         </div>
 
-        <div v-if="showComparison" class="w-full overflow-x-auto rounded-box border border-base-300 lg:min-h-112">
-        <table class="table table-zebra min-w-max w-full text-base">
+        <div v-if="showComparison" class="w-full min-w-0 overflow-x-auto rounded-box border border-base-300 xl:min-h-112" role="region" aria-label="Coin comparison" tabindex="0">
+        <table class="table table-zebra w-full min-w-[36rem] text-sm sm:text-base">
             <thead>
                 <tr>
                     <th>Coin</th>

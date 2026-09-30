@@ -60,10 +60,12 @@
                         <div class="card-actions mt-2 justify-end">
                             <router-link :to="`/coin/${coin.id}`" class="btn btn-primary">View details</router-link>
                         </div>
-                        <button class="btn btn-ghost btn-circle" @click="coinsStore.toggleFavorite(coin.id)"
-                            aria-label="Toggle favorite">
+                        <button type="button" class="btn btn-ghost btn-circle"
+                            @click="coinsStore.toggleFavorite(coin.id)"
+                            :aria-pressed="coinsStore.isFavorite(coin.id)"
+                            :aria-label="`${coinsStore.isFavorite(coin.id) ? 'Remove' : 'Add'} ${coin.name} ${coinsStore.isFavorite(coin.id) ? 'from' : 'to'} favorites`">
                             <svg viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5"
-                                :class="favorites.includes(coin.id) ? 'text-warning' : 'text-base-content/30'"
+                                :class="coinsStore.isFavorite(coin.id) ? 'text-warning' : 'text-base-content/30'"
                                 aria-hidden="true">
                                 <path
                                     d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
@@ -79,15 +81,12 @@
 import { RouterLink } from 'vue-router';
 import { computed, onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useCoinsStore } from '@/stores/coins'
-
+import { useCoinsStore } from '@/stores/coinStore'
 const coinsStore = useCoinsStore()
 const { coins, searchQuery, isLoading, error, favorites } = storeToRefs(coinsStore)
-
 const skeletonCards = Array.from({ length: 8 }, (_, index) => index)
 const showOnlyFavorites = ref(false)
 const selectedFilter = ref('all')
-const isDarkMode = ref(false)
 const filteredCoins = computed(() => {
     const query = searchQuery.value.trim().toLowerCase()
     let result = coins.value
@@ -117,16 +116,10 @@ function loadCoins() {
     return coinsStore.fetchCoins()
 }
 
-function applyTheme() {
-    const theme = isDarkMode.value ? 'dark' : 'light'
-    document.documentElement.setAttribute('data-theme', theme)
-    localStorage.setItem('theme', theme)
-}
+
 
 onMounted(() => {
     if (!coins.value.length) loadCoins()
-    isDarkMode.value = localStorage.getItem('theme') === 'dark'
-    applyTheme()
 })
-
+    
 </script>

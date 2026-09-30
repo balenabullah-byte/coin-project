@@ -39,7 +39,7 @@
 import { computed, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { RouterLink, useRoute } from 'vue-router';
-import { useCoinsStore } from '@/stores/coins';
+import { useCoinsStore } from '@/stores/coinStore';
 
 const route = useRoute()
 const coinsStore = useCoinsStore()

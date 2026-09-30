@@ -1,5 +1,6 @@
 <template>
-    <main class="mx-auto grid w-full max-w-7xl grid-cols-1 items-start gap-6 px-4 py-6 sm:px-6 lg:px-8 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.6fr)]">
+    <main
+        class="mx-auto grid w-full max-w-7xl grid-cols-1 items-start gap-6 px-4 py-6 sm:px-6 lg:px-8 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.6fr)]">
         <div class="min-w-0 xl:max-h-[calc(100vh-2rem)] xl:overflow-y-auto xl:pr-2">
             <div class="sticky top-0 z-10 mb-4 flex flex-wrap items-center gap-3 border-b bg-base-100 pb-4">
                 <div class="flex gap-2 w-full overflow-x-auto min-w-0 sm:flex-1 sm:w-auto">
@@ -8,8 +9,10 @@
                         <button class="btn btn-ghost btn-xs" @click="removeSelectedCoin(coin.id)">✕</button>
                     </span>
                 </div>
-                <span class="text-sm opacity-70 sm:whitespace-nowrap">{{ compareCoins.length }} / {{ filtered_compareCoins.length }}</span>
-                <button class="btn btn-primary w-full sm:w-auto" :disabled="!canCompare" @click="showComparisonTable">Compare</button>
+                <span class="text-sm opacity-70 sm:whitespace-nowrap">{{ compareCoins.length }} / {{
+                    filtered_compareCoins.length }}</span>
+                <button class="btn btn-primary w-full sm:w-auto" :disabled="!canCompare"
+                    @click="showComparisonTable">Compare</button>
             </div>
             <section class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <label v-for="coin in filtered_compareCoins" :key="coin.id"
@@ -30,38 +33,41 @@
 
         </div>
 
-        <div v-if="showComparison" class="w-full min-w-0 overflow-x-auto rounded-box border border-base-300 xl:min-h-112" role="region" aria-label="Coin comparison" tabindex="0">
-        <table class="table table-zebra w-full min-w-[36rem] text-sm sm:text-base">
-            <thead>
-                <tr>
-                    <th>Coin</th>
-                    <th>Price</th>
-                    <th>24h change</th>
-                    <th>Market cap</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="coin in compareCoins" :key="coin.id">
-                    <th>{{ coin.name }}</th>
-                    <td>{{ coin.current_price }}</td>
-                    <td>
-                        <span class="badge" :class="coin.price_change_percentage_24h >= 0 ? 'badge-success' : 'badge-error'">
-                            {{ coin.price_change_percentage_24h >= 0 ? '↑' : '↓' }}
-                            {{ formatPercentage(coin.price_change_percentage_24h) }}%
-                        </span>
-                    </td>
-                    <td>{{ coin.market_cap }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div v-if="showComparison"
+            class="w-full min-w-0 overflow-x-auto rounded-box border border-base-300 xl:min-h-112" role="region"
+            aria-label="Coin comparison" tabindex="0">
+            <table class="table table-zebra w-full min-w-xl text-sm sm:text-base">
+                <thead>
+                    <tr>
+                        <th>Coin</th>
+                        <th>Price</th>
+                        <th>24h change</th>
+                        <th>Market cap</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="coin in compareCoins" :key="coin.id">
+                        <th>{{ coin.name }}</th>
+                        <td>{{ coin.current_price }}</td>
+                        <td>
+                            <span class="badge"
+                                :class="coin.price_change_percentage_24h >= 0 ? 'badge-success' : 'badge-error'">
+                                {{ coin.price_change_percentage_24h >= 0 ? '↑' : '↓' }}
+                                {{ formatPercentage(coin.price_change_percentage_24h) }}%
+                            </span>
+                        </td>
+                        <td>{{ coin.market_cap }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </main>
 </template>
 <script setup>
 import { storeToRefs } from 'pinia';
-import { useCoinsStore } from '@/stores/coins'
-import { computed,ref } from 'vue';
-import{onMounted} from 'vue'
+import { useCoinsStore } from '@/stores/coinStore'
+import { computed, ref } from 'vue';
+import { onMounted } from 'vue'
 const coinsStore = useCoinsStore()
 
 const { coins, searchQuery, isLoading, error, favorites, selectedIds, compareCoins, canCompare } = storeToRefs(coinsStore)
@@ -92,9 +98,9 @@ function showComparisonTable() {
     showComparison.value = true
 }
 onMounted(() => {
-  if (!coins.value.length) {
-    coinsStore.fetchCoins().catch(error => console.error(error))
-  }
+    if (!coins.value.length) {
+        coinsStore.fetchCoins().catch(error => console.error(error))
+    }
 })
 
 

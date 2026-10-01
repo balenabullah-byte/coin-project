@@ -23,7 +23,6 @@
                     @click="canCompare && showComparisonTable()">Compare</button>
                 <p id="compare-hint" v-if="!canCompare" class="text-sm opacity-70">Select at least 2 coins to compare.
                 </p>
-                <p v-if="!canCompare" class="text-sm opacity-70">Select at least 2 coins to compare.</p>
             </div>
             <section class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <label v-for="coin in filtered_compareCoins" :key="coin.id"
@@ -50,8 +49,8 @@
         <p class="sr-only" role="status">
             {{ showComparison ? `Comparison table showing ${compareCoins.length} coins` : '' }}
         </p>
-        <div v-if="showComparison"
-            class="w-full min-w-0 overflow-x-auto rounded-box border border-base-300 xl:min-h-112" role="region"
+        <div v-if="showComparison" ref="comparisonRef"
+            class="w-full min-w-0 overflow-x-auto rounded-box border border-base-300 xl:min-h-112 order-first xl:order-0 scroll-mt-4" role="region"
             aria-label="Coin comparison" tabindex="0">
             <table class="table table-zebra w-full min-w-xl text-sm sm:text-base">
                 <thead>
@@ -93,12 +92,13 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { useCoinsStore } from '@/stores/coinStore'
-import { computed, ref } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 import { onMounted } from 'vue'
 const coinsStore = useCoinsStore()
 
 const { coins, searchQuery, isLoading, error, favorites, selectedIds, compareCoins, canCompare } = storeToRefs(coinsStore)
 const showComparison = ref(false)
+const comparisonRef = ref(null)
 const filtered_compareCoins = computed(() => {
     let query = searchQuery.value.trim().toLowerCase()
     let result = coins.value
@@ -121,12 +121,19 @@ function clearCompare() {
 function removeSelectedCoin(coinId) {
     toggleCompare(coinId)
 }
-function showComparisonTable() {
+async function showComparisonTable() {
     showComparison.value = true
+    await nextTick()
+    // Only on small screens (below xl). Do nothing on large screens.
+    if (window.matchMedia('(min-width: 80rem)').matches) return
+    comparisonRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    comparisonRef.value?.focus({ preventScroll: true })
 }
+// Function to check if the value is up (positive) or down (negative)
 function isUp(value) {
     return value != null && value >= 0
 }
+// Function to check if the value has changed (not null)
 function hasChange(value) {
     return value != null
 }
@@ -135,8 +142,5 @@ onMounted(() => {
         coinsStore.fetchCoins().catch(error => console.error(error))
     }
 })
-
-
-
 
 </script>

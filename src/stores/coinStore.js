@@ -30,6 +30,7 @@ export const useCoinsStore = defineStore("coins", {
   },
   actions: {
     toggleFavorite(coinId) {
+     
       this.favorites = this.favorites.filter((id) => typeof id === "string");
 
       if (typeof coinId === "string" && coinId.length > 0) {
@@ -46,6 +47,7 @@ export const useCoinsStore = defineStore("coins", {
       localStorage.setItem("favorites", JSON.stringify(this.favorites));
     },
     toggleCompare(coinId) {
+       if (typeof coinId !== "string") return;
       const index = this.selectedIds.indexOf(coinId);
 
       if (index === -1) {

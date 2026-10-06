@@ -2,7 +2,7 @@
 import { useTheme } from '@/composables/useTheme';
 import { RouterView } from 'vue-router';
 import { useRoute } from 'vue-router';
-import Navbar from '@/components/navbar.vue'
+import Navbar from '@/Components/navbar.vue'
 import { storeToRefs } from 'pinia';
 import { useCoinsStore } from '@/stores/coinStore';
 

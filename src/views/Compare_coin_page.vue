@@ -5,7 +5,7 @@
         <p v-if="error" role="alert" class="alert alert-error col-span-full">{{ error }}</p>
         <div class="min-w-0 xl:max-h-[calc(100vh-2rem)] xl:overflow-y-auto xl:pr-2">
             <h1 class="sr-only">Compare coins</h1>
-            <div class="sticky top-0 z-10 mb-4 flex flex-wrap items-center gap-3 border-b bg-base-100 pb-4">
+            <div class="sticky top-24 sm:top-16 xl:top-0 z-10 mb-4 flex flex-wrap items-center gap-3 border-b bg-base-100 pb-4">
                 <div class="flex gap-2 w-full overflow-x-auto min-w-0 sm:flex-1 sm:w-auto">
                     <span v-for="coin in compareCoins" :key="coin.id" class="badge badge-lg shrink-0 gap-2">
                         <img :src="coin.image" :alt="`${coin.name} logo`" class="w-4 h-4" /> {{ coin.name }}
@@ -50,9 +50,9 @@
             {{ showComparison ? `Comparison table showing ${compareCoins.length} coins` : '' }}
         </p>
         <div v-if="showComparison" ref="comparisonRef"
-            class="w-full min-w-0 overflow-x-auto rounded-box border border-base-300 xl:min-h-112 order-first xl:order-0 scroll-mt-4" role="region"
+            class="w-full min-w-0 overflow-x-auto rounded-box border border-base-300 xl:min-h-112 order-first xl:order-0 scroll-mt-28 sm:scroll-mt-20 xl:scroll-mt-4" role="region"
             aria-label="Coin comparison" tabindex="0">
-            <table class="table table-zebra w-full min-w-xl text-sm sm:text-base">
+            <table class="table table-zebra table-sm sm:table-md w-full min-w-md sm:min-w-xl text-sm sm:text-base">
                 <thead>
                     <tr>
                         <th scope="col">Coin</th>

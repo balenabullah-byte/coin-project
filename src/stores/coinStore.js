@@ -21,7 +21,6 @@ export const useCoinsStore = defineStore("coins", {
         : [],
     };
   },
-  //state == data, getters == computed properties, actions == methods
   getters: {
     compareCoins(state) {
       return state.coins.filter((coin) => state.selectedIds.includes(coin.id));
@@ -33,7 +32,6 @@ export const useCoinsStore = defineStore("coins", {
   },
   actions: {
     toggleFavorite(coinId) {
-     
       this.favorites = this.favorites.filter((id) => typeof id === "string");
 
       if (typeof coinId === "string" && coinId.length > 0) {
@@ -41,8 +39,7 @@ export const useCoinsStore = defineStore("coins", {
 
         if (index === -1) {
           this.favorites.push(coinId);
-        }
-        else {
+        } else {
           this.favorites.splice(index, 1);
         }
       }
@@ -50,13 +47,12 @@ export const useCoinsStore = defineStore("coins", {
       localStorage.setItem("favorites", JSON.stringify(this.favorites));
     },
     toggleCompare(coinId) {
-       if (typeof coinId !== "string") return;
+      if (typeof coinId !== "string") return;
       const index = this.selectedIds.indexOf(coinId);
 
       if (index === -1) {
         this.selectedIds.push(coinId);
-      }
-      else {
+      } else {
         this.selectedIds.splice(index, 1);
       }
     },
@@ -78,7 +74,9 @@ export const useCoinsStore = defineStore("coins", {
             "x-cg-demo-api-key": import.meta.env.VITE_COINGECKO_API_KEY,
           },
         });
-        this.coins = response.data.map((coin) => ({
+
+        const nextCoins = Array.isArray(response?.data) ? response.data : [];
+        this.coins = nextCoins.map((coin) => ({
           id: coin.id,
           name: coin.name,
           image: coin.image,
@@ -97,6 +95,29 @@ export const useCoinsStore = defineStore("coins", {
         this.isLoading = false;
       }
     },
+    async fetchCoinsnews() {
+      if (this.isNewsLoading) return this.coin_news;
 
+      this.isNewsLoading = true;
+      this.newsError = null;
+
+      try {
+        const response = await axios.request({
+          method: "GET",
+          url: "/api/news",
+          params: { category: "crypto" },
+        });
+
+        const nextNews = Array.isArray(response?.data) ? response.data : [];
+        this.coin_news = nextNews;
+        return this.coin_news;
+      } catch (error) {
+        this.newsError = "Failed to load cryptocurrency news. Please try again.";
+        console.error("Error fetching cryptocurrency news:", error);
+        return undefined;
+      } finally {
+        this.isNewsLoading = false;
+      }
+    },
   },
 });

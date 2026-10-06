@@ -34,7 +34,7 @@ describe("Navbar", () => {
   });
 
   it("shows the CoinTracker logo linking to home", () => {
-    const wrapper = mountNvabar();
+    const wrapper = mountNavbar();
     const logo = wrapper.findComponent(RouterLinkStub);
 
     expect(logo.text()).toContain("CoinTracker");

@@ -6,16 +6,17 @@
             <p class="mt-2 text-base-content/70">Track prices and daily movement across the market.</p>
         </header>
         <div class="flex flex-wrap items-center gap-3 sm:gap-5 justify-end pb-8">
-            <button class="btn btn-sm" :class="showOnlyFavorites ? 'btn-primary' : 'btn-ghost'"
+            <!-- <button class="btn btn-sm" :class="showOnlyFavorites ? 'btn-primary' : 'btn-ghost'"
                 @click="showOnlyFavorites = !showOnlyFavorites">
                 ★ My watchlist
-            </button>
+            </button> -->
             <select class="select select-sm w-full max-w-xs" v-model="selectedFilter">
                 <option value="all">Filter</option>
+                <option value="favorites">Favorites </option>
                 <option value="price_up">Price up</option>
                 <option value="price_down">Price down</option>
             </select>
-            
+
         </div>
 
         <section v-if="isLoading" class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
@@ -61,8 +62,7 @@
                             <router-link :to="`/coin/${coin.id}`" class="btn btn-primary">View details</router-link>
                         </div>
                         <button type="button" class="btn btn-ghost btn-circle"
-                            @click="coinsStore.toggleFavorite(coin.id)"
-                            :aria-pressed="coinsStore.isFavorite(coin.id)"
+                            @click="coinsStore.toggleFavorite(coin.id)" :aria-pressed="coinsStore.isFavorite(coin.id)"
                             :aria-label="`${coinsStore.isFavorite(coin.id) ? 'Remove' : 'Add'} ${coin.name} ${coinsStore.isFavorite(coin.id) ? 'from' : 'to'} favorites`">
                             <svg viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5"
                                 :class="coinsStore.isFavorite(coin.id) ? 'text-warning' : 'text-base-content/30'"
@@ -85,7 +85,6 @@ import { useCoinsStore } from '@/stores/coinStore'
 const coinsStore = useCoinsStore()
 const { coins, searchQuery, isLoading, error, favorites } = storeToRefs(coinsStore)
 const skeletonCards = Array.from({ length: 8 }, (_, index) => index)
-const showOnlyFavorites = ref(false)
 const selectedFilter = ref('all')
 const filteredCoins = computed(() => {
     const query = searchQuery.value.trim().toLowerCase()
@@ -95,7 +94,7 @@ const filteredCoins = computed(() => {
         result = result.filter(coin => coin.name.toLowerCase().includes(query))
     }
 
-    if (showOnlyFavorites.value) {
+    if (selectedFilter.value === 'favorites') {
         result = result.filter(coin => favorites.value.includes(coin.id))
     }
 
@@ -115,11 +114,13 @@ function formatPercentage(value) {
 function loadCoins() {
     return coinsStore.fetchCoins()
 }
-
-
+async function loadNews() {
+    const news = await coinsStore.fetchCoinsnews()
+    if (news) console.log("Fetched news:", news)
+}
 
 onMounted(() => {
     if (!coins.value.length) loadCoins()
+    loadNews()
 })
-    
 </script>

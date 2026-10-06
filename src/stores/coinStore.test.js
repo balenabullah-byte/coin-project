@@ -106,6 +106,61 @@ describe("fetchCoins", () => {
     expect(store.error).toBeNull();
   });
 
+  describe("fetchCoinsnews", () => {
+    test("stores and returns the Finnhub news response without dropping fields", async () => {
+      const store = useCoinsStore();
+      const article = {
+        category: "crypto",
+        datetime: 1700000000,
+        headline: "Bitcoin market update",
+        id: 123,
+        image: "https://example.com/image.png",
+        related: "BTC",
+        source: "Example",
+        summary: "Market news summary",
+        url: "https://example.com/news",
+      };
+      axios.request.mockResolvedValue({ data: [article] });
+
+      const news = await store.fetchCoinsnews();
+
+      expect(axios.request).toHaveBeenCalledWith({
+        method: "GET",
+        url: "/api/news",
+        params: { category: "crypto" },
+      });
+      expect(news).toEqual([article]);
+      expect(store.coin_news).toEqual([article]);
+      expect(store.isNewsLoading).toBe(false);
+    });
+
+    test("keeps news loading independent from coin loading", async () => {
+      const store = useCoinsStore();
+      store.isLoading = true;
+      axios.request.mockResolvedValue({ data: [] });
+
+      await store.fetchCoinsnews();
+
+      expect(axios.request).toHaveBeenCalledOnce();
+      expect(store.isLoading).toBe(true);
+      expect(store.isNewsLoading).toBe(false);
+    });
+
+    test("sets a news-specific error when the Finnhub request fails", async () => {
+      const store = useCoinsStore();
+      axios.request.mockRejectedValue(new Error("Network error"));
+      vi.spyOn(console, "error").mockImplementation(() => {});
+
+      await expect(store.fetchCoinsnews()).resolves.toBeUndefined();
+
+      expect(store.newsError).toBe(
+        "Failed to load cryptocurrency news. Please try again."
+      );
+      expect(store.error).toBeNull();
+      expect(store.isNewsLoading).toBe(false);
+    });
+  });
+
   test("fetchCoins keeps loading true while the request is pending", async () => {
     const store = useCoinsStore();
     let resolveRequest;

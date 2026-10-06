@@ -8,6 +8,9 @@ export const useCoinsStore = defineStore("coins", {
     );
 
     return {
+      coin_news: [],
+      isNewsLoading: false,
+      newsError: null,
       coins: [],
       isLoading: false,
       error: null,
@@ -94,5 +97,6 @@ export const useCoinsStore = defineStore("coins", {
         this.isLoading = false;
       }
     },
+
   },
 });

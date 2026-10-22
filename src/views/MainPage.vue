@@ -79,7 +79,7 @@ import { RouterLink } from 'vue-router'
 import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useCoinsStore } from '@/stores/coinStore'
-import PriceChange from '@/components/PriceChange.vue'
+import PriceChange from './Components/PriceChange.vue'
 import { formatCurrency } from '@/utils/formatMarket'
 
 const coinsStore = useCoinsStore()

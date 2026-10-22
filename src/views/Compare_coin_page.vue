@@ -98,7 +98,7 @@
 import { storeToRefs } from 'pinia'
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useCoinsStore } from '@/stores/coinStore'
-import PriceChange from '@/components/PriceChange.vue'
+import PriceChange from './Components/PriceChange.vue'
 import { formatCurrency } from '@/utils/formatMarket'
 
 const coinsStore = useCoinsStore()

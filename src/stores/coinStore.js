@@ -95,29 +95,29 @@ export const useCoinsStore = defineStore("coins", {
         this.isLoading = false;
       }
     },
-    async fetchCoinsnews() {
-      if (this.isNewsLoading) return this.coin_news;
+    // async fetchCoinsnews() {
+    //   if (this.isNewsLoading) return this.coin_news;
 
-      this.isNewsLoading = true;
-      this.newsError = null;
+    //   this.isNewsLoading = true;
+    //   this.newsError = null;
 
-      try {
-        const response = await axios.request({
-          method: "GET",
-          url: "/api/news",
-          params: { category: "crypto" },
-        });
+    //   try {
+    //     const response = await axios.request({
+    //       method: "GET",
+    //       url: "/api/news",
+    //       params: { category: "crypto" },
+    //     });
 
-        const nextNews = Array.isArray(response?.data) ? response.data : [];
-        this.coin_news = nextNews;
-        return this.coin_news;
-      } catch (error) {
-        this.newsError = "Failed to load cryptocurrency news. Please try again.";
-        console.error("Error fetching cryptocurrency news:", error);
-        return undefined;
-      } finally {
-        this.isNewsLoading = false;
-      }
-    },
+    //     const nextNews = Array.isArray(response?.data) ? response.data : [];
+    //     this.coin_news = nextNews;
+    //     return this.coin_news;
+    //   } catch (error) {
+    //     this.newsError = "Failed to load cryptocurrency news. Please try again.";
+    //     console.error("Error fetching cryptocurrency news:", error);
+    //     return undefined;
+    //   } finally {
+    //     this.isNewsLoading = false;
+    //   }
+    // },
   },
 });

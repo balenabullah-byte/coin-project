@@ -1,79 +1,72 @@
 <template>
-  <main class="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-8 p-4 sm:p-8">
-    <div class="w-full max-w-7xl">
-      <RouterLink to="/" class="btn btn-ghost">Go Back</RouterLink>
-    </div>
-    <section v-if="coin" class="hero w-full bg-base-200">
-      <div class="hero-content flex-col lg:flex-row">
-        <img :src="coin.image" :alt="coin.name" class="w-full max-w-sm rounded-lg shadow-2xl" />
-        <h1 class="text-center text-3xl font-bold sm:text-5xl lg:text-left">{{ coin.name }}</h1>
-      </div>
+  <main id="main-content" tabindex="-1" class="page-shell max-w-4xl!">
+    <RouterLink to="/" class="btn btn-ghost mb-6 min-h-11 gap-2">
+      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7m-7 7h14" /></svg>
+      Back to coins
+    </RouterLink>
+
+    <section v-if="isLoading" class="state-panel" aria-busy="true" role="status">
+      <span class="loading loading-spinner text-primary" aria-hidden="true"></span>
+      <h1 class="text-xl font-semibold">Loading coin details...</h1>
     </section>
-    <section class="w-full">
-      <div v-if="isLoading" class="flex justify-center py-16">
-        <span class="loading loading-dots loading-xl" aria-label="Loading coin details"></span>
-      </div>
-      <div v-else-if="error" role="alert" class="alert alert-error">
-        <span>{{ error }}</span>
-      </div>
-      <div v-else-if="coin" class="overflow-x-auto rounded-box bg-base-100 shadow-sm">
-        <table class="table table-zebra">
+    <section v-else-if="error" role="alert" class="state-panel">
+      <h1 class="text-xl font-semibold">Unable to load coin details</h1>
+      <p class="text-base-content/75">{{ error }}</p>
+      <button type="button" class="btn btn-primary min-h-11" @click="coinsStore.fetchCoins">Try again</button>
+    </section>
+    <template v-else-if="coin">
+      <header class="mb-8 flex items-center gap-5">
+        <img :src="coin.image" alt="" width="80" height="80" class="h-16 w-16 shrink-0 object-contain sm:h-20 sm:w-20" />
+        <h1 class="min-w-0 text-3xl font-bold sm:text-4xl">{{ coin.name }}</h1>
+      </header>
+      <div class="overflow-hidden rounded-2xl border border-base-300 bg-base-100">
+        <table class="table table-zebra w-full text-sm sm:text-base">
+          <caption class="sr-only">{{ coin.name }} market details in US dollars</caption>
           <thead>
             <tr>
-              <th>Metric</th>
-              <th>Value</th>
+              <th scope="col" class="px-4 py-4 text-base-content/75 sm:px-6">Metric</th>
+              <th scope="col" class="px-4 py-4 text-right text-base-content/75 sm:px-6">Value</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="metric in metrics" :key="metric.label">
-              <th>{{ metric.label }}</th>
-              <td class="font-medium">{{ metric.format(coin[metric.key]) }}</td>
+            <tr v-for="metric in metrics" :key="metric.key">
+              <th scope="row" class="px-4 py-4 font-medium sm:px-6">{{ metric.label }}</th>
+              <td class="break-all px-4 py-4 text-right font-semibold tabular-nums sm:px-6">{{ metric.format(coin[metric.key]) }}</td>
             </tr>
           </tbody>
         </table>
       </div>
+    </template>
+    <section v-else class="state-panel" role="status">
+      <h1 class="text-xl font-semibold">Coin not found</h1>
+      <p class="max-w-md text-base-content/75">This coin isn't available in the current market list.</p>
+      <RouterLink to="/" class="btn btn-primary min-h-11">Browse coins</RouterLink>
     </section>
   </main>
 </template>
+
 <script setup>
-import { computed, onMounted } from 'vue';
-import { storeToRefs } from 'pinia';
-import { RouterLink, useRoute } from 'vue-router';
-import { useCoinsStore } from '@/stores/coinStore';
+import { computed, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
+import { RouterLink, useRoute } from 'vue-router'
+import { useCoinsStore } from '@/stores/coinStore'
+import { formatCurrency } from '@/utils/formatMarket'
 
 const route = useRoute()
 const coinsStore = useCoinsStore()
 const { coins, isLoading, error } = storeToRefs(coinsStore)
-
 const coin = computed(() => coins.value.find(item => item.id === route.params.id))
-const currencyFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  maximumFractionDigits: 2,
-})
 const integerFormatter = new Intl.NumberFormat('en-US')
-// key:label 
-//key:for coin obj
 const metrics = [
   { label: 'Price', key: 'current_price', format: formatCurrency },
-  { label: 'Market cap', key: 'market_cap', format: formatCurrency },
+  { label: 'Market cap', key: 'market_cap', format: value => formatCurrency(value, { whole: true }) },
   { label: '24h high', key: 'high_24h', format: formatCurrency },
   { label: '24h low', key: 'low_24h', format: formatCurrency },
   { label: 'All-time high', key: 'ath', format: formatCurrency },
-  { label: 'Market cap rank', key: 'market_cap_rank', format: formatRank },
+  { label: 'Market cap rank', key: 'market_cap_rank', format: value => typeof value === 'number' && Number.isFinite(value) ? `#${integerFormatter.format(value)}` : 'N/A' },
 ]
 
-function formatCurrency(value) {
-  return value == null ? 'N/A' : currencyFormatter.format(value)
-}
-
-function formatRank(value) {
-  return value == null ? 'N/A' : `#${integerFormatter.format(value)}`
-}
-
 onMounted(() => {
-  if (!coins.value.length) {
-    coinsStore.fetchCoins().catch(error => console.error(error))
-  }
+  if (!coins.value.length) coinsStore.fetchCoins()
 })
 </script>

@@ -76,7 +76,6 @@ describe("compare", () => {
     store.coins = [bitcoin, ethereum, litecoin];
     store.toggleCompare("litecoin");
     store.toggleCompare("bitcoin");
-
     expect(store.compareCoins).toEqual([bitcoin, litecoin]);
   });
 });

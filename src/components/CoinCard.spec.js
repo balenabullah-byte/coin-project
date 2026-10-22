@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount } from "@vue/test-utils";
 import { ref } from "vue";
-import Navbar from "@/components/Navbar.vue";
+import Navbar from "@/components/navbar.vue";
 const { push, toggleTheme } = vi.hoisted(() => ({
   push: vi.fn(),
   toggleTheme: vi.fn(),
